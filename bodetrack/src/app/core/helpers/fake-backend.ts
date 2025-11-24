@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpRequest, HttpResponse, HttpHandler, HttpEvent, HttpInterceptor, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { delay, mergeMap, materialize, dematerialize } from 'rxjs/operators';
-import { ChannelsData, TableData, agencies, agentlistdata, attachementsData, bookmarkData, browserData, callsData, chatContactData, chatData, cources, courseGrid, courseList, customerList, dealData, earningcard, earningdata, estateList, feedback, instructor, invoice, invoicesList, leadData, listingGrid, listinglist, listinglistcard, messages, orderList, orders, productList, products, property, recentcourse, rentproperty, saleproperty, sales, sellerList, sellerOverview, subscription, supporttickets, taskData, ticketList, topPageData } from '../data';
+import { ChannelsData, TableData, agencies, agentlistdata, attachementsData, bookmarkData,  callsData, chatContactData, chatData, cources, courseGrid, courseList, customerList, dealData, earningcard, earningdata, estateList, feedback, instructor, invoice, invoicesList, leadData, listingGrid, listinglist, listinglistcard, messages, orderList, orders, productList, products, property, recentcourse, rentproperty, saleproperty, sales,  subscription, supporttickets, taskData, ticketList } from '../data';
 import { category, instructorGrid, instructorList } from '../data/learning';
 
 
@@ -122,21 +122,8 @@ export class fakebackendInterceptor implements HttpInterceptor {
             }
 
             // get browser
-            if (request.url.endsWith('/app/browser') && request.method === 'GET') {
-                if (browserData) {
-                    return of(new HttpResponse({ status: 200, body: browserData }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
-            // get toppage
-            if (request.url.endsWith('/app/toppage') && request.method === 'GET') {
-                if (topPageData) {
-                    return of(new HttpResponse({ status: 200, body: topPageData }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
+
+
 
             // get table
             if (request.url.endsWith('/app/table') && request.method === 'GET') {
@@ -653,80 +640,7 @@ export class fakebackendInterceptor implements HttpInterceptor {
                     return throwError({ status: 401, error: { message: 'Unauthorised' } });
                 }
             }
-            // get Seller
-            if (request.url.endsWith('/app/sellerOverview') && request.method === 'GET') {
-                if (sellerOverview) {
-                    return of(new HttpResponse({ status: 200, body: sellerOverview }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
-            // Add seller list
-            if (request.url.endsWith('/app/sellerOverview') && request.method === 'POST') {
-                const newUser = request.body;
-                if (sellerOverview) {
-                    return of(new HttpResponse({ status: 200, body: newUser }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
 
-            // Update seller list
-            if (request.url.endsWith('/app/sellerOverview') && request.method === 'PUT') {
-                const updatedUser = request.body;
-                if (sellerOverview) {
-                    return of(new HttpResponse({ status: 200, body: updatedUser }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
-
-            // DELETE seller list
-            if (request.url.endsWith('/app/sellerOverview') && request.method === 'DELETE') {
-                const updatedUser = request.body;
-                if (sellerOverview) {
-                    return of(new HttpResponse({ status: 200, body: updatedUser })); // respond 200 OK
-                } else {
-                    return throwError({ status: 401, error: { message: 'Unauthorised' } });
-                }
-            }
-            // get Seller
-            if (request.url.endsWith('/app/seller') && request.method === 'GET') {
-                if (sellerList) {
-                    return of(new HttpResponse({ status: 200, body: sellerList }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
-            // Add seller list
-            if (request.url.endsWith('/app/seller') && request.method === 'POST') {
-                const newUser = request.body;
-                if (sellerList) {
-                    return of(new HttpResponse({ status: 200, body: newUser }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
-
-            // Update seller list
-            if (request.url.endsWith('/app/seller') && request.method === 'PUT') {
-                const updatedUser = request.body;
-                if (sellerList) {
-                    return of(new HttpResponse({ status: 200, body: updatedUser }));
-                } else {
-                    return throwError({ status: 401, error: { message: 'No Data Found' } });
-                }
-            }
-
-            // DELETE seller list
-            if (request.url.endsWith('/app/seller') && request.method === 'DELETE') {
-                const updatedUser = request.body;
-                if (sellerList) {
-                    return of(new HttpResponse({ status: 200, body: updatedUser })); // respond 200 OK
-                } else {
-                    return throwError({ status: 401, error: { message: 'Unauthorised' } });
-                }
-            }
             // get orderList
             if (request.url.endsWith('/app/orderList') && request.method === 'GET') {
                 if (orderList) {
