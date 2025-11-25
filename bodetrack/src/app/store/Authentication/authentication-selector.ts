@@ -17,3 +17,6 @@ export const getError = createSelector(
     getLayoutState,
     (state: AuthenticationState) => state.error
 );
+
+// Alias más semántico
+export const selectAuthError = getError;

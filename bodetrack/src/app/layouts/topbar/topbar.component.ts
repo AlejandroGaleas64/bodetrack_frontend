@@ -1,4 +1,12 @@
-import { Component, Output, EventEmitter, Inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  Inject,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { EventService } from 'src/app/core/services/event.service';
 import { LanguageService } from 'src/app/core/services/language.service';
@@ -11,16 +19,17 @@ import { RootReducerState } from 'src/app/store';
 import { Store } from '@ngrx/store';
 import { changeMode } from 'src/app/store/layouts/layout-action';
 import { getLayoutmode } from 'src/app/store/layouts/layout-selector';
-import { TokenStorageService } from 'src/app/core/services/token-storage.service';
-import { cartList } from 'src/app/core/data/cart'
+import { cartList } from 'src/app/core/data/cart';
+import { getUser } from 'src/app/store/Authentication/authentication-selector';
+import { UsuarioLogin } from 'src/app/Models/Acceso/Usuario.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
-  styleUrls: ['./topbar.component.scss']
+  styleUrls: ['./topbar.component.scss'],
 })
-export class TopbarComponent {
-
+export class TopbarComponent implements OnInit {
   country: any;
   selectedItem!: any;
 
@@ -28,7 +37,8 @@ export class TopbarComponent {
   valueset: any;
   countryName: any;
   cookieValue: any;
-  userData: any;
+  userData: UsuarioLogin | null = null;
+  private userSubscription?: Subscription;
   cartData: any;
 
   element: any;
@@ -46,65 +56,83 @@ export class TopbarComponent {
   notificationList: any;
 
   @Output() mobileMenuButtonClicked = new EventEmitter();
-  @ViewChild('removeNotificationModal', { static: false }) removeNotificationModal?: ModalDirective;
-  @ViewChild('removeCartModal', { static: false }) removeCartModal?: ModalDirective;
+  @ViewChild('removeNotificationModal', { static: false })
+  removeNotificationModal?: ModalDirective;
+  @ViewChild('removeCartModal', { static: false })
+  removeCartModal?: ModalDirective;
   deleteid: any;
   totalNotify: number = 0;
   newNotify: number = 0;
   readNotify: number = 0;
 
-  constructor(@Inject(DOCUMENT) private document: any,
+  constructor(
+    @Inject(DOCUMENT) private document: any,
     private eventService: EventService,
     public languageService: LanguageService,
     private authService: AuthenticationService,
     private router: Router,
     public _cookiesService: CookieService,
-    public store: Store<RootReducerState>,
-    private TokenStorageService: TokenStorageService) { }
+    public store: Store<RootReducerState>
+  ) {}
 
   ngOnInit(): void {
     this.element = document.documentElement;
-    this.userData = this.TokenStorageService.getUser();
-    this.cartData = cartList
-    this.cartData.map((x: any) => {
-      x['total'] = (x['qty'] * x['price']).toFixed(2)
-      this.subtotal += parseFloat(x['total'])
-    })
-    this.subtotal = this.subtotal.toFixed(2)
-    this.discount = (this.subtotal * this.discountRate).toFixed(2)
-    this.tax = (this.subtotal * this.taxRate).toFixed(2);
-    this.totalsum = (parseFloat(this.subtotal) + parseFloat(this.tax) + parseFloat(this.shippingRate) - parseFloat(this.discount)).toFixed(2)
 
+    // Suscribirse al usuario del store de autenticación
+    this.userSubscription = this.store.select(getUser).subscribe((user) => {
+      this.userData = user;
+    });
+    this.cartData = cartList;
+    this.cartData.map((x: any) => {
+      x['total'] = (x['qty'] * x['price']).toFixed(2);
+      this.subtotal += parseFloat(x['total']);
+    });
+    this.subtotal = this.subtotal.toFixed(2);
+    this.discount = (this.subtotal * this.discountRate).toFixed(2);
+    this.tax = (this.subtotal * this.taxRate).toFixed(2);
+    this.totalsum = (
+      parseFloat(this.subtotal) +
+      parseFloat(this.tax) +
+      parseFloat(this.shippingRate) -
+      parseFloat(this.discount)
+    ).toFixed(2);
 
     // Cookies wise Language set
     this.cookieValue = this._cookiesService.get('lang');
-    const val = this.listLang.filter(x => x.lang === this.cookieValue);
-    this.countryName = val.map(element => element.text);
+    const val = this.listLang.filter((x) => x.lang === this.cookieValue);
+    this.countryName = val.map((element) => element.text);
     if (val.length === 0) {
-      if (this.flagvalue === undefined) { this.valueset = 'assets/images/flags/us.svg'; }
-      this.countryName = 'English'
+      if (this.flagvalue === undefined) {
+        this.valueset = 'assets/images/flags/us.svg';
+      }
+      this.countryName = 'English';
     } else {
-      this.flagvalue = val.map(element => element.flag);
+      this.flagvalue = val.map((element) => element.flag);
     }
 
-    this.notificationList = notification
+    this.notificationList = notification;
     this.notificationList.forEach((element: any) => {
-      this.totalNotify += element.items.length
+      this.totalNotify += element.items.length;
       if (element.title == 'New') {
-        this.newNotify = element.items.length
+        this.newNotify = element.items.length;
       } else {
-        this.readNotify = element.items.length
+        this.readNotify = element.items.length;
       }
     });
   }
 
   windowScroll() {
-    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-      (document.getElementById('back-to-top') as HTMLElement).style.display = "block";
-      document.getElementById('page-topbar')?.classList.add('topbar-shadow')
+    if (
+      document.body.scrollTop > 100 ||
+      document.documentElement.scrollTop > 100
+    ) {
+      (document.getElementById('back-to-top') as HTMLElement).style.display =
+        'block';
+      document.getElementById('page-topbar')?.classList.add('topbar-shadow');
     } else {
-      (document.getElementById('back-to-top') as HTMLElement).style.display = "none";
-      document.getElementById('page-topbar')?.classList.remove('topbar-shadow')
+      (document.getElementById('back-to-top') as HTMLElement).style.display =
+        'none';
+      document.getElementById('page-topbar')?.classList.remove('topbar-shadow');
     }
   }
 
@@ -114,56 +142,70 @@ export class TopbarComponent {
     this.subtotal = 0;
     if (id == '0' && qty > 1) {
       qty--;
-      this.cartData[i].qty = qty
-      this.cartData[i].total = (this.cartData[i].qty * this.cartData[i].price).toFixed(2)
+      this.cartData[i].qty = qty;
+      this.cartData[i].total = (
+        this.cartData[i].qty * this.cartData[i].price
+      ).toFixed(2);
     }
     if (id == '1') {
       qty++;
-      this.cartData[i].qty = qty
-      this.cartData[i].total = (this.cartData[i].qty * this.cartData[i].price).toFixed(2)
+      this.cartData[i].qty = qty;
+      this.cartData[i].total = (
+        this.cartData[i].qty * this.cartData[i].price
+      ).toFixed(2);
     }
 
     this.cartData.map((x: any) => {
-      this.subtotal += parseFloat(x['total'])
-    })
+      this.subtotal += parseFloat(x['total']);
+    });
 
-    this.subtotal = this.subtotal.toFixed(2)
-    this.discount = (this.subtotal * this.discountRate).toFixed(2)
+    this.subtotal = this.subtotal.toFixed(2);
+    this.discount = (this.subtotal * this.discountRate).toFixed(2);
     this.tax = (this.subtotal * this.taxRate).toFixed(2);
-    this.totalsum = (parseFloat(this.subtotal) + parseFloat(this.tax) + parseFloat(this.shippingRate) - parseFloat(this.discount)).toFixed(2)
+    this.totalsum = (
+      parseFloat(this.subtotal) +
+      parseFloat(this.tax) +
+      parseFloat(this.shippingRate) -
+      parseFloat(this.discount)
+    ).toFixed(2);
   }
 
   removeCart(id: any) {
-    this.removeCartModal?.show()
+    this.removeCartModal?.show();
     this.deleteid = id;
   }
 
   confirmDelete() {
-    this.removeCartModal?.hide()
+    this.removeCartModal?.hide();
 
-    this.subtotal -= this.cartData[this.deleteid].total
-    this.subtotal = this.subtotal.toFixed(2)
-    this.discount = (this.subtotal * this.discountRate).toFixed(2)
+    this.subtotal -= this.cartData[this.deleteid].total;
+    this.subtotal = this.subtotal.toFixed(2);
+    this.discount = (this.subtotal * this.discountRate).toFixed(2);
     this.tax = (this.subtotal * this.taxRate).toFixed(2);
-    this.totalsum = (parseFloat(this.subtotal) + parseFloat(this.tax) + parseFloat(this.shippingRate) - parseFloat(this.discount)).toFixed(2)
-    this.cartData.splice(this.deleteid, 1)
+    this.totalsum = (
+      parseFloat(this.subtotal) +
+      parseFloat(this.tax) +
+      parseFloat(this.shippingRate) -
+      parseFloat(this.discount)
+    ).toFixed(2);
+    this.cartData.splice(this.deleteid, 1);
   }
 
   /**
-* Topbar Light-Dark Mode Change
-*/
+   * Topbar Light-Dark Mode Change
+   */
   changeMode(mode: string) {
     this.mode = mode;
     if (mode == 'auto') {
-      document.documentElement.setAttribute('data-bs-theme', 'light')
+      document.documentElement.setAttribute('data-bs-theme', 'light');
       document.documentElement.setAttribute('data-topbar', 'light');
-      document.documentElement.classList.add('mode-auto')
+      document.documentElement.classList.add('mode-auto');
     } else {
       this.store.dispatch(changeMode({ mode }));
-    this.store.select(getLayoutmode).subscribe((mode) => {
-      document.documentElement.setAttribute('data-bs-theme', mode);
-    })
-      document.documentElement.classList.remove('mode-auto')
+      this.store.select(getLayoutmode).subscribe((mode) => {
+        document.documentElement.setAttribute('data-bs-theme', mode);
+      });
+      document.documentElement.classList.remove('mode-auto');
       document.documentElement.setAttribute('data-topbar', mode);
     }
   }
@@ -183,8 +225,8 @@ export class TopbarComponent {
   ];
 
   /***
-  * Language Value Set
-  */
+   * Language Value Set
+   */
   setLanguage(text: string, lang: string, flag: string) {
     this.countryName = text;
     this.flagvalue = flag;
@@ -196,19 +238,21 @@ export class TopbarComponent {
    * Toggle the menu bar when having mobile screen
    */
   toggleMobileMenu(event: any) {
-    document.querySelector('.hamburger-icon')?.classList.toggle('open')
+    document.querySelector('.hamburger-icon')?.classList.toggle('open');
     event.preventDefault();
     this.mobileMenuButtonClicked.emit();
   }
 
   /**
-  * Fullscreen method
-  */
+   * Fullscreen method
+   */
   fullscreen() {
     document.body.classList.toggle('fullscreen-enable');
     if (
-      !document.fullscreenElement && !this.element.mozFullScreenElement &&
-      !this.element.webkitFullscreenElement) {
+      !document.fullscreenElement &&
+      !this.element.mozFullScreenElement &&
+      !this.element.webkitFullscreenElement
+    ) {
       if (this.element.requestFullscreen) {
         this.element.requestFullscreen();
       } else if (this.element.mozRequestFullScreen) {
@@ -239,39 +283,54 @@ export class TopbarComponent {
 
   // Search Topbar
   Search() {
-    var searchOptions = document.getElementById("search-close-options") as HTMLAreaElement;
-    var dropdown = document.getElementById("search-dropdown") as HTMLAreaElement;
-    var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any;
-    input = document.getElementById("search-options") as HTMLAreaElement;
+    var searchOptions = document.getElementById(
+      'search-close-options'
+    ) as HTMLAreaElement;
+    var dropdown = document.getElementById(
+      'search-dropdown'
+    ) as HTMLAreaElement;
+    var input: any,
+      filter: any,
+      ul: any,
+      li: any,
+      a: any | undefined,
+      i: any,
+      txtValue: any;
+    input = document.getElementById('search-options') as HTMLAreaElement;
     filter = input.value.toUpperCase();
     var inputLength = filter.length;
 
     if (inputLength > 0) {
-      dropdown.classList.add("show");
-      searchOptions.classList.remove("d-none");
+      dropdown.classList.add('show');
+      searchOptions.classList.remove('d-none');
       var inputVal = input.value.toUpperCase();
-      var notifyItem = document.getElementsByClassName("notify-item");
+      var notifyItem = document.getElementsByClassName('notify-item');
 
       Array.from(notifyItem).forEach(function (element: any) {
-        var notifiTxt = ''
-        if (element.querySelector("h6")) {
-          var spantext = element.getElementsByTagName("span")[0].innerText.toLowerCase()
-          var name = element.querySelector("h6").innerText.toLowerCase()
+        var notifiTxt = '';
+        if (element.querySelector('h6')) {
+          var spantext = element
+            .getElementsByTagName('span')[0]
+            .innerText.toLowerCase();
+          var name = element.querySelector('h6').innerText.toLowerCase();
           if (name.includes(inputVal)) {
-            notifiTxt = name
+            notifiTxt = name;
           } else {
-            notifiTxt = spantext
+            notifiTxt = spantext;
           }
-        } else if (element.getElementsByTagName("span")) {
-          notifiTxt = element.getElementsByTagName("span")[0].innerText.toLowerCase()
+        } else if (element.getElementsByTagName('span')) {
+          notifiTxt = element
+            .getElementsByTagName('span')[0]
+            .innerText.toLowerCase();
         }
         if (notifiTxt)
-          element.style.display = notifiTxt.includes(inputVal) ? "block" : "none";
-
+          element.style.display = notifiTxt.includes(inputVal)
+            ? 'block'
+            : 'none';
       });
     } else {
-      dropdown.classList.remove("show");
-      searchOptions.classList.add("d-none");
+      dropdown.classList.remove('show');
+      searchOptions.classList.add('d-none');
     }
   }
 
@@ -279,19 +338,25 @@ export class TopbarComponent {
    * Search Close Btn
    */
   closeBtn() {
-    var searchOptions = document.getElementById("search-close-options") as HTMLAreaElement;
-    var dropdown = document.getElementById("search-dropdown") as HTMLAreaElement;
-    var searchInputReponsive = document.getElementById("search-options") as HTMLInputElement;
-    dropdown.classList.remove("show");
-    searchOptions.classList.add("d-none");
-    searchInputReponsive.value = "";
+    var searchOptions = document.getElementById(
+      'search-close-options'
+    ) as HTMLAreaElement;
+    var dropdown = document.getElementById(
+      'search-dropdown'
+    ) as HTMLAreaElement;
+    var searchInputReponsive = document.getElementById(
+      'search-options'
+    ) as HTMLInputElement;
+    dropdown.classList.remove('show');
+    searchOptions.classList.add('d-none');
+    searchInputReponsive.value = '';
   }
 
   // Remove Notification
   checkedValGet: any[] = [];
   onCheckboxChange(event: any, id: any) {
     var checkedVal: any[] = [];
-    var result
+    var result;
     for (var i = 0; i < this.notificationList.length; i++) {
       for (var x = 0; x < this.notificationList[i].items.length; x++) {
         if (this.notificationList[i].items[x].state == true) {
@@ -300,8 +365,14 @@ export class TopbarComponent {
         }
       }
     }
-    this.checkedValGet = checkedVal
-    checkedVal.length > 0 ? (document.getElementById("notification-actions") as HTMLElement).style.display = 'block' : (document.getElementById("notification-actions") as HTMLElement).style.display = 'none';
+    this.checkedValGet = checkedVal;
+    checkedVal.length > 0
+      ? ((
+          document.getElementById('notification-actions') as HTMLElement
+        ).style.display = 'block')
+      : ((
+          document.getElementById('notification-actions') as HTMLElement
+        ).style.display = 'none');
   }
 
   notificationDelete() {
@@ -309,29 +380,37 @@ export class TopbarComponent {
       for (var j = 0; j < this.notificationList.length; j++) {
         for (var x = 0; x < this.notificationList[j].items.length; x++) {
           if (this.notificationList[j].items[x].id == this.checkedValGet[i]) {
-            this.notificationList[j].items.splice(x, 1)
+            this.notificationList[j].items.splice(x, 1);
           }
         }
       }
     }
-    this.calculatenotification()
+    this.calculatenotification();
     this.removeNotificationModal?.hide();
   }
 
   calculatenotification() {
     this.totalNotify = 0;
-    this.checkedValGet = []
+    this.checkedValGet = [];
     this.notificationList.forEach((element: any) => {
-      this.totalNotify += element.items.length
+      this.totalNotify += element.items.length;
       if (element.title == 'New') {
-        this.newNotify = element.items.length
+        this.newNotify = element.items.length;
       } else {
-        this.readNotify = element.items.length
+        this.readNotify = element.items.length;
       }
     });
-    this.checkedValGet.length > 0 ? (document.getElementById("notification-actions") as HTMLElement).style.display = 'block' : (document.getElementById("notification-actions") as HTMLElement).style.display = 'none';
+    this.checkedValGet.length > 0
+      ? ((
+          document.getElementById('notification-actions') as HTMLElement
+        ).style.display = 'block')
+      : ((
+          document.getElementById('notification-actions') as HTMLElement
+        ).style.display = 'none');
     if (this.totalNotify == 0) {
-      document.querySelector('.empty-notification-elem')?.classList.remove('d-none')
+      document
+        .querySelector('.empty-notification-elem')
+        ?.classList.remove('d-none');
     }
   }
 
@@ -340,11 +419,10 @@ export class TopbarComponent {
    */
   logout() {
     this.authService.logout();
-    // if (environment.defaultauth === 'firebase') {
-    //   this.authService.logout();
-    // } else {
-    //   this.authFackservice.logout();
-    // }
     this.router.navigate(['/auth/login']);
+
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 }

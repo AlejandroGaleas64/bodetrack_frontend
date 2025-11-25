@@ -1,4 +1,3 @@
-import { browserData, topPageData } from "./analytics";
 import { TableData, leadData, dealData, taskData } from "./CRM";
 import { sales, orders, products } from "./ecommerce";
 import { instructor, recentcourse, instructorList } from "./learning";
@@ -11,19 +10,17 @@ import { messages, attachementsData, chatContactData, chatData, callsData, bookm
 import { productList } from "./product";
 import { customerList } from "./customer";
 import { invoicesList, invoice } from "./invoice";
-import { sellerOverview } from "./seller";
 import { orderList } from "./order";
 import { listinglistcard, estateList } from "./appRealestate";
 import { earningcard, earningdata } from "./realestate";
 import { courseList, courseGrid } from "./cources";
-import { sellerList } from "./seller";
 import { subscription } from "./students"
 import { cources } from "./students"
 export {
-    browserData, topPageData, TableData, leadData, dealData, taskData, sales, orders, products, instructor, recentcourse, property, feedback,
+    TableData, leadData, dealData, taskData, sales, orders, products, instructor, recentcourse, property, feedback,
     saleproperty, rentproperty, listingGrid, listinglist, agentlistdata, agencies, supporttickets, assignesTickets, ticketList,
-    messages, chatContactData, chatData, ChannelsData,attachementsData,callsData, bookmarkData, productList, customerList, invoicesList, invoice, sellerOverview, orderList, estateList, listinglistcard,
+    messages, chatContactData, chatData, ChannelsData,attachementsData,callsData, bookmarkData, productList, customerList, invoicesList, invoice, orderList, estateList, listinglistcard,
     earningdata, earningcard, instructorList,
-    courseList, sellerList, cources,
+    courseList,  cources,
     subscription, courseGrid
 }
