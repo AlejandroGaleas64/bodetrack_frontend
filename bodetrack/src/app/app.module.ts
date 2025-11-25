@@ -3,9 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClient, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-// auth
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+
 // Page Route
 import { AppRoutingModule } from './app-routing.module';
 import { LayoutsModule } from './layouts/layouts.module';
@@ -28,15 +26,9 @@ import { fakebackendInterceptor } from './core/helpers/fake-backend';
 import { ErrorInterceptor } from './core/helpers/error.interceptor';
 import { JwtInterceptor } from './core/helpers/jwt.interceptor';
 import { AuthenticationEffects } from './store/Authentication/authentication.effects';
-import { initFirebaseBackend } from './authUtils';
 
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
-}
-if (environment.defaultauth === 'firebase') {
-  initFirebaseBackend(environment.firebaseConfig);
-} else {
-  fakebackendInterceptor;
 }
 
 @NgModule({ declarations: [
@@ -59,15 +51,13 @@ if (environment.defaultauth === 'firebase') {
         EffectsModule.forRoot([
             AuthenticationEffects,
         ]),
-        AngularFireModule.initializeApp(environment.firebaseConfig),
         BrowserModule,
         BrowserAnimationsModule,
         AppRoutingModule,
         LayoutsModule,
         ToastrModule.forRoot(),
         FormsModule,
-        ReactiveFormsModule,
-        AngularFireAuthModule], providers: [
+        ReactiveFormsModule], providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: fakebackendInterceptor, multi: true },

@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, switchMap, catchError, exhaustMap, tap } from 'rxjs/operators';
-import { from, of } from 'rxjs';
+import { map, catchError, exhaustMap, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { AuthenticationService } from '../../core/services/auth.service';
 import { login, loginSuccess, loginFailure, logout, logoutSuccess, Register } from './authentication.actions';
 import { Router } from '@angular/router';
@@ -27,17 +27,18 @@ export class AuthenticationEffects {
   login$ = createEffect(() =>
     this.actions$.pipe(
       ofType(login),
-      exhaustMap(({ email, password }) =>
-        this.AuthenticationService.login(email, password).pipe(
-          map((user) => {
-            if (user.status == 'success') {
-              localStorage.setItem('currentUser', JSON.stringify(user.data));
-              localStorage.setItem('token', user.token);
-              this.router.navigate(['/']);
-            }
-            return loginSuccess({ user });
+      exhaustMap(({ username, password }) =>
+        this.AuthenticationService.login(username, password).pipe(
+          map((response) => {
+            // La validación de code_Status ya se hace en el servicio
+            // Si llegamos aquí, el login fue exitoso
+            this.router.navigate(['/']);
+            return loginSuccess({ user: response.data });
           }),
-          catchError((error) => of(loginFailure({ error })))
+          catchError((error) => {
+            // El error ya fue despachado en el servicio
+            return of(loginFailure({ error: error.message || 'Error en el login' }));
+          })
         )
       )
     )

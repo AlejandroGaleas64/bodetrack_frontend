@@ -11,10 +11,17 @@
               <div class="card mb-0 border-0 shadow-none mb-0">
                 <div class="card-body p-sm-5 m-lg-4">
                   <div class="text-center mt-5">
-                    <h5 class="fs-3xl">Welcome Back</h5>
-                    <p class="text-muted">Sign in to continue to Steex.</p>
+                    <h5 class="fs-3xl">Bienvenido</h5>
+                    <p class="text-muted">Inicia sesión para continuar en BodeTrack.</p>
                   </div>
                   <div class="p-2 mt-5">
+                    @if (error) {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                      <i class="ri-error-warning-line me-2"></i> {{ error }}
+                      <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+                    </div>
+                    }
+                    
                     <form
                       [formGroup]="loginForm"
                       (ngSubmit)="onSubmit()"
@@ -22,24 +29,24 @@
                     >
                       <div class="mb-3">
                         <label for="username" class="form-label"
-                          >Username <span class="text-danger">*</span></label
+                          >Usuario <span class="text-danger">*</span></label
                         >
                         <div class="position-relative">
                           <input
                             type="text"
-                            class="form-control password-input"
-                            formControlName="email"
+                            class="form-control"
+                            formControlName="username"
                             id="username"
                             [ngClass]="{
-                              'is-invalid': submitted && f['email'].errors
+                              'is-invalid': submitted && f['username'].errors
                             }"
-                            placeholder="Enter username"
+                            placeholder="Ingrese su usuario"
                             required
                           />
-                          @if (submitted && f['email'].errors) {
+                          @if (submitted && f['username'].errors) {
                           <div class="invalid-feedback">
-                            @if (f['email'].errors['required']) {
-                            <div>Username is required</div>
+                            @if (f['username'].errors['required']) {
+                            <div>El usuario es requerido</div>
                             }
                           </div>
                           }
@@ -49,11 +56,11 @@
                       <div class="mb-3">
                         <div class="float-end">
                           <a routerLink="/auth/pass-reset" class="text-muted"
-                            >Forgot password?</a
+                            >¿Olvidaste tu contraseña?</a
                           >
                         </div>
                         <label class="form-label" for="password-input"
-                          >Password <span class="text-danger">*</span></label
+                          >Contraseña <span class="text-danger">*</span></label
                         >
                         <div
                           class="position-relative auth-pass-inputgroup mb-3"
@@ -66,7 +73,7 @@
                             }"
                             type="password"
                             class="form-control pe-5 password-input"
-                            placeholder="Enter password"
+                            placeholder="Ingrese su contraseña"
                             id="password-input"
                             required
                           />
@@ -87,7 +94,7 @@
                           @if (submitted && f['password'].errors) {
                           <div class="invalid-feedback">
                             @if (f['password'].errors['required']) {
-                            <div>Password is required</div>
+                            <div>La contraseña es requerida</div>
                             }
                           </div>
                           }
@@ -104,13 +111,13 @@
                         <label
                           class="form-check-label"
                           for="auth-remember-check"
-                          >Remember me</label
+                          >Recuérdame</label
                         >
                       </div>
 
                       <div class="mt-4">
                         <button class="btn btn-primary w-100" type="submit">
-                          Sign In
+                          Iniciar Sesión
                         </button>
                       </div>
 
