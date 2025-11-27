@@ -6,6 +6,9 @@ const routes: Routes = [
     path: '', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule)
   },
   {
+    path: 'inventario', loadChildren: () => import('./inventario/inventario.module').then(m => m.InventarioModule)
+  },
+  {
     path: 'ui', loadChildren: () => import('./ui/ui.module').then(m => m.UiModule)
   },
   {
@@ -22,6 +25,9 @@ const routes: Routes = [
   },
   {
     path: 'pages', loadChildren: () => import('./extrapages/extrapages.module').then(m => m.ExtrapagesModule)
+  },
+  {
+    path: 'general', loadChildren: () => import('./General/general.module').then(m => m.GeneralModule)
   },
 ];
 

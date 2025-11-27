@@ -1,0 +1,131 @@
+<!-- Overlay de carga -->
+<div *ngIf="mostrarOverlayCarga" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<!-- Breadcrumbs -->
+<app-breadcrumbs title="Cargos" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <!-- Header: Búsqueda y Botón Nuevo -->
+        <div class="d-flex justify-content-between mb-3" *ngIf="!mostrarFormularioCrear && !mostrarFormularioEditar && !mostrarFormularioDetalles">
+          <button type="button" class="btn btn-primary" (click)="crear()">
+            <i class="ri-add-line align-bottom me-1"></i> Nuevo
+          </button>
+          
+          <div class="search-box">
+            <input type="text" class="form-control search" placeholder="Buscar..." 
+                   [ngModel]="table.searchTerm" (ngModelChange)="table.setSearchTerm($event)">
+            <i class="ri-search-line search-icon"></i>
+          </div>
+        </div>
+
+        <!-- Formulario de Creación (Colapsable) -->
+        <div class="row mb-3" *ngIf="mostrarFormularioCrear">
+          <div class="col-lg-12">
+             <app-create (onCancel)="cerrarFormulario()" (onSave)="guardarCargo($event)"></app-create>
+          </div>
+        </div>
+
+        <!-- Formulario de Edición (Colapsable) -->
+        <div class="row mb-3" *ngIf="mostrarFormularioEditar">
+          <div class="col-lg-12">
+             <app-edit [cargoData]="cargoSeleccionado" (onCancel)="cerrarFormulario()" (onSave)="guardarCargo($event)"></app-edit>
+          </div>
+        </div>
+
+        <!-- Formulario de Detalles (Colapsable) -->
+        <div class="row mb-3" *ngIf="mostrarFormularioDetalles">
+          <div class="col-lg-12">
+             <app-details [cargoData]="cargoSeleccionado" (onCancel)="cerrarFormulario()"></app-details>
+          </div>
+        </div>
+
+        <!-- Tabla y Paginación -->
+        <div [hidden]="mostrarFormularioCrear || mostrarFormularioEditar || mostrarFormularioDetalles">
+          <div class="table-responsive">
+            <table class="table align-middle table-nowrap table-hover table-striped mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">Acciones</th>
+                  <th scope="col" class="sort" (click)="table.sortBy('secuencia')" style="cursor: pointer;">
+                    No. 
+                  </th>
+                  <th scope="col" class="sort" (click)="table.sortBy('carg_Descripcion')" style="cursor: pointer;">
+                    Descripción 
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let data of table.paginated$ | async">
+                  <td class="position-relative">
+                    <div class="dropdown-action-list">
+                      
+                      <button type="button"
+                        class="dropdown-toggle btn btn-sm btn-light"
+                        [attr.aria-expanded]="false"
+                        (click)="floatingMenuService.open($event, data)">
+                        Acciones
+                      </button>
+                    </div>
+                  </td>
+                  <td>{{data.secuencia}}</td>
+                  <td>{{data.carg_Descripcion}}</td>
+                </tr>
+                <tr *ngIf="(table.total$ | async) === 0">
+                  <td colspan="3" class="text-center">No hay registros encontrados</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paginación -->
+          <div class="row justify-content-between align-items-center mt-3">
+            <div class="col-auto">
+              <div class="dataTables_info">
+                Mostrando {{ (table.page - 1) * table.pageSizeValue + 1 }} a 
+                {{ ((table.page - 1) * table.pageSizeValue) + ((table.paginated$ | async)?.length || 0) }} 
+                de {{ table.total$ | async }} registros
+              </div>
+            </div>
+            <div class="col-auto">
+              <pagination [totalItems]="(table.total$ | async) || 0" 
+                          [ngModel]="table.page" 
+                          [itemsPerPage]="table.pageSizeValue" 
+                          (pageChanged)="table.setPage($event.page)">
+              </pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Menú Flotante -->
+<ul
+  *ngIf="floatingMenuService.show"
+  class="dropdown-menu show"  
+  [ngStyle]="{
+    position: 'absolute',
+    top: floatingMenuService.top + 'px',
+    left: floatingMenuService.left + 'px'
+  }"
+  style="z-index: 10000;">
+  <li>
+    <button type="button" class="dropdown-item" (click)="editar(floatingMenuService.data); floatingMenuService.close()">
+      <i class="ri-pencil-line me-2 align-bottom text-muted"></i> Editar
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item" (click)="detalles(floatingMenuService.data); floatingMenuService.close()">
+      <i class="ri-eye-line me-2 align-bottom text-muted"></i> Detalles
+    </button>
+  </li>
+</ul>
+

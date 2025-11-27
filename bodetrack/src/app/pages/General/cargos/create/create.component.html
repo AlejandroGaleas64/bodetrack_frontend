@@ -1,0 +1,32 @@
+<div class="d-flex flex-column" style="height: 100%; min-height: 250px;">
+  <h5 class="card-title mb-4">Crear Nuevo Cargo</h5>
+
+
+
+  <!-- Formulario -->
+  <div class="flex-grow-1">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="mb-3">
+          <label for="cargoDescripcion" class="form-label">
+            Descripción <span class="text-danger" *ngIf="mostrarErrores">*</span>
+          </label>
+          <input type="text" class="form-control"
+            [class.is-invalid]="!cargo.carg_Descripcion.trim() && mostrarErrores" 
+            id="cargoDescripcion"
+            [(ngModel)]="cargo.carg_Descripcion" 
+            placeholder="Ingrese la descripción del cargo" required />
+          <div class="invalid-feedback" *ngIf="!cargo.carg_Descripcion.trim() && mostrarErrores">
+            La descripción es requerida.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="mt-auto pt-3 text-end">
+    <button type="button" class="btn btn-light me-2" (click)="cancelar()">Cancelar</button>
+    <button type="button" class="btn btn-primary" (click)="guardar()">Guardar</button>
+  </div>
+</div>
