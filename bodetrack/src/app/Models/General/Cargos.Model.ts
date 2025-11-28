@@ -7,7 +7,7 @@ export interface Cargos {
     carg_Modificacion?: number;
     carg_FechaModificacion?: string;
     
-    secuencia?: number;
+    secuencia?: number; 
     usua_Creacion?: number;
     usua_Modificacion?: number;
 }
