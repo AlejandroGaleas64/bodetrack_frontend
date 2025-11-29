@@ -98,6 +98,12 @@
                   <th scope="col" class="sort" (click)="table.sortBy('sali_CostoTotal')" style="cursor: pointer;">
                     Costo Total 
                   </th>
+                  <th scope="col" class="sort" (click)="table.sortBy('usuarioRecibe')" style="cursor: pointer;">
+                    Usuario Recibió 
+                  </th>
+                  <th scope="col" class="sort" (click)="table.sortBy('sali_FechaRecepcion')" style="cursor: pointer;">
+                    Fecha Recibió 
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -129,9 +135,19 @@
                     </span>
                   </td>
                   <td>L {{data.sali_CostoTotal | number:'1.2-2'}}</td>
+                  <td>
+                    <span *ngIf="data.usuarioRecibe" class="text-success">
+                      <i class="ri-user-check-line me-1"></i>{{data.usuarioRecibe}}
+                    </span>
+                    <span *ngIf="!data.usuarioRecibe" class="text-muted">-</span>
+                  </td>
+                  <td>
+                    <span *ngIf="data.sali_FechaRecepcion">{{data.sali_FechaRecepcion | date:'dd/MM/yyyy HH:mm'}}</span>
+                    <span *ngIf="!data.sali_FechaRecepcion" class="text-muted">-</span>
+                  </td>
                 </tr>
                 <tr *ngIf="(table.total$ | async) === 0">
-                  <td colspan="7" class="text-center">No hay registros encontrados</td>
+                  <td colspan="9" class="text-center">No hay registros encontrados</td>
                 </tr>
               </tbody>
             </table>
@@ -181,3 +197,15 @@
     </button>
   </li>
 </ul>
+
+<!-- Modal de Confirmación -->
+<app-confirmation
+  [show]="mostrarConfirmacion"
+  title="Confirmar Recepción"
+  [message]="'¿Está seguro que desea recibir la Salida #' + (salidaARecibir?.sali_Id || '') + '? Esta acción registrará la fecha y usuario actual.'"
+  confirmText="Sí, Recibir"
+  cancelText="Cancelar"
+  type="success"
+  (onConfirm)="confirmarRecepcion()"
+  (onCancel)="mostrarConfirmacion = false">
+</app-confirmation>

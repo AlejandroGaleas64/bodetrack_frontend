@@ -22,10 +22,12 @@ interface DetalleSalidaItem {
   Sade_FechaCreacion: string;
 }
 
+import { ConfirmationComponent } from '../confirmation/confirmation.component';
+
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ConfirmationComponent],
   templateUrl: './details.component.html',
   styleUrl: './details.component.scss'
 })
@@ -42,6 +44,9 @@ export class DetailsComponent implements OnChanges {
   detallesProductos: DetalleSalidaItem[] = [];
   cargando = false;
   userData: any;
+  
+  // Modal de confirmación
+  mostrarConfirmacion = false;
 
   constructor(
     private http: HttpClient,
@@ -118,9 +123,14 @@ export class DetailsComponent implements OnChanges {
       return;
     }
 
-    // Confirmar acción
-    const confirmar = confirm(`¿Confirmar recepción de la Salida #${this.salidaDetalle.sali_Id}?`);
-    if (!confirmar) return;
+    // Confirmar acción con modal
+    this.mostrarConfirmacion = true;
+  }
+
+  confirmarRecepcion(): void {
+    if (!this.salidaDetalle) return;
+    
+    this.mostrarConfirmacion = false;
 
     const request = {
       sali_Id: this.salidaDetalle.sali_Id,

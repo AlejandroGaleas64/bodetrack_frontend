@@ -1,1 +1,32 @@
-<p>confirmation works!</p>
+<div class="modal fade" [ngClass]="{'show d-block': show}" tabindex="-1" role="dialog" aria-hidden="true" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{title}}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+      </div>
+      <div class="modal-body text-center p-4">
+        <div class="mb-4">
+          <i *ngIf="type === 'warning'" class="ri-alert-line display-1 text-warning"></i>
+          <i *ngIf="type === 'danger'" class="ri-error-warning-line display-1 text-danger"></i>
+          <i *ngIf="type === 'success'" class="ri-checkbox-circle-line display-1 text-success"></i>
+          <i *ngIf="type === 'info'" class="ri-information-line display-1 text-info"></i>
+        </div>
+        <p class="mb-0 fs-5">{{message}}</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-light" (click)="cancel()">{{cancelText}}</button>
+        <button type="button" class="btn" 
+                [ngClass]="{
+                  'btn-warning': type === 'warning',
+                  'btn-danger': type === 'danger',
+                  'btn-success': type === 'success',
+                  'btn-info': type === 'info'
+                }" 
+                (click)="confirm()">
+          {{confirmText}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
