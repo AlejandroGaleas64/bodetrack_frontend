@@ -1,5 +1,124 @@
-.active {
-    /* Add your desired styles for the active link */
-    color: blue;
-    font-weight: bold;
+
+.app-menu {
+  background: linear-gradient(135deg, #141a2f 0%, #1a2340 100%);
+  border-right: 1px solid rgba(214, 182, 138, 0.1);
+}
+
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  border-left: 3px solid transparent;
+
+  i {
+    color: #d6b68a;
+    transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
   }
+
+  span {
+    transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  &:hover {
+    background: rgba(214, 182, 138, 0.08);
+    color: #fff;
+    border-left-color: #d6b68a;
+
+    i {
+      transform: translateX(5px) scale(1.08);
+      color: #e0c89a;
+    }
+
+    span {
+      transform: translateX(2px);
+    }
+  }
+}
+
+
+.nav-link.active,
+.nav-link.show {
+  background: rgba(20, 26, 47, 0.6);
+  color: #fff;
+  border-left-color: #d6b68a;
+  font-weight: 600;
+
+  i {
+    color: #d6b68a;
+  }
+}
+
+.menu-title {
+  color: rgba(214, 182, 138, 0.6);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.menu-dropdown {
+  background: rgba(20, 26, 47, 0.3);
+  border-left: 2px solid rgba(214, 182, 138, 0.15);
+}
+
+.menu-dropdown .nav-link {
+  padding-left: 2.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.65);
+
+  &:hover {
+    background: rgba(214, 182, 138, 0.08);
+  }
+}
+
+
+#scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(214, 182, 138, 0.4);
+  border-radius: 3px;
+}
+
+.active {
+  color: #d6b68a;
+  font-weight: bold;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.logo-text {
+  display: flex;
+  gap: 0.3rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.logo-text-sm {
+  display: flex;
+  gap: 0.2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.logo-bode {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.logo-track {
+  color: #D6B68A;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+
+@media (max-width: 576px) {
+  .logo-lg {
+    display: none;
+  }
+
+  .logo-sm {
+    display: block;
+  }
+}

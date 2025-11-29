@@ -124,3 +124,15 @@
     </div>
   </div>
 </div>
+
+<!-- Modal de Confirmación -->
+<app-confirmation
+  [show]="mostrarConfirmacion"
+  title="Confirmar Recepción"
+  [message]="'¿Está seguro que desea recibir la Salida #' + (salidaDetalle?.sali_Id || '') + '? Esta acción registrará la fecha y usuario actual.'"
+  confirmText="Sí, Recibir"
+  cancelText="Cancelar"
+  type="success"
+  (onConfirm)="confirmarRecepcion()"
+  (onCancel)="mostrarConfirmacion = false">
+</app-confirmation>

@@ -1,144 +1,115 @@
-<section
-  class="auth-page-wrapper py-5 position-relative d-flex align-items-center justify-content-center min-vh-100"
->
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-11">
-        <div class="card mb-0">
-          <div class="row g-0 align-items-center">
-            <!--end col-->
-            <div class="col-xxl-6 mx-auto">
-              <div class="card mb-0 border-0 shadow-none mb-0">
-                <div class="card-body p-sm-5 m-lg-4">
-                  <div class="text-center mt-5">
-                    <h5 class="fs-3xl">Bienvenido</h5>
-                    <p class="text-muted">Inicia sesión para continuar en BodeTrack.</p>
-                  </div>
-                  <div class="p-2 mt-5">
-                    @if (error) {
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                      <i class="ri-error-warning-line me-2"></i> {{ error }}
-                      <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
-                    </div>
-                    }
-                    
-                    <form
-                      [formGroup]="loginForm"
-                      (ngSubmit)="onSubmit()"
-                      action="index.html"
-                    >
-                      <div class="mb-3">
-                        <label for="username" class="form-label"
-                          >Usuario <span class="text-danger">*</span></label
-                        >
-                        <div class="position-relative">
-                          <input
-                            type="text"
-                            class="form-control"
-                            formControlName="username"
-                            id="username"
-                            [ngClass]="{
-                              'is-invalid': submitted && f['username'].errors
-                            }"
-                            placeholder="Ingrese su usuario"
-                            required
-                          />
-                          @if (submitted && f['username'].errors) {
-                          <div class="invalid-feedback">
-                            @if (f['username'].errors['required']) {
-                            <div>El usuario es requerido</div>
-                            }
-                          </div>
-                          }
-                        </div>
-                      </div>
 
-                      <div class="mb-3">
-                        <div class="float-end">
-                          <a routerLink="/auth/pass-reset" class="text-muted"
-                            >¿Olvidaste tu contraseña?</a
-                          >
-                        </div>
-                        <label class="form-label" for="password-input"
-                          >Contraseña <span class="text-danger">*</span></label
-                        >
-                        <div
-                          class="position-relative auth-pass-inputgroup mb-3"
-                        >
-                          <input
-                            [type]="fieldTextType ? 'text' : 'password'"
-                            formControlName="password"
-                            [ngClass]="{
-                              'is-invalid': submitted && f['password'].errors
-                            }"
-                            type="password"
-                            class="form-control pe-5 password-input"
-                            placeholder="Ingrese su contraseña"
-                            id="password-input"
-                            required
-                          />
-                          <button
-                            class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
-                            type="button"
-                            id="password-addon"
-                          >
-                            <i
-                              class="ri-eye-fill align-middle"
-                              [ngClass]="{
-                                'mdi-eye-off-outline': !fieldTextType,
-                                'mdi-eye-outline': fieldTextType
-                              }"
-                              (click)="toggleFieldTextType()"
-                            ></i>
-                          </button>
-                          @if (submitted && f['password'].errors) {
-                          <div class="invalid-feedback">
-                            @if (f['password'].errors['required']) {
-                            <div>La contraseña es requerida</div>
-                            }
-                          </div>
-                          }
-                        </div>
-                      </div>
+<header class="login-header">
+  <div class="login-header-content">
+    <div class="login-logo-text">
+      <span class="logo-bode">Bode</span><span class="logo-track">Track</span>
+    </div>
+  </div>
+  <svg class="login-header-curve" width="1262" height="193" viewBox="0 0 1262 193" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M-14 -53.8398H1254.03C1254.03 -53.8398 1363.5 207.702 1244.99 181.748C563.5 32.5 -9.47848 193 -9.47848 193L-14 -53.8398Z" fill="#D6B68A"/>
+    <path d="M-14 -58H1254.03C1254.03 -58 1352.86 156.604 1244.99 140.529C661 53.5 -9.47848 150.011 -9.47848 150.011L-14 -58Z" fill="#141A2F"/>
+  </svg>
+</header>
 
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          value=""
-                          id="auth-remember-check"
-                        />
-                        <label
-                          class="form-check-label"
-                          for="auth-remember-check"
-                          >Recuérdame</label
-                        >
-                      </div>
+<section class="auth-page-wrapper d-flex align-items-center justify-content-center min-vh-100">
+  <div class="login-overlay"></div>
+  
+  <div class="login-card">
+    <h2 class="login-title">Bienvenido</h2>
+    <p class="text-center text-white mb-4" style="opacity: 0.9;">Inicia sesión para continuar en BodeTrack.</p>
+    
 
-                      <div class="mt-4">
-                        <button class="btn btn-primary w-100" type="submit">
-                          Iniciar Sesión
-                        </button>
-                      </div>
+    @if (error) {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="ri-error-warning-line me-2"></i> {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+    </div>
+    }
+    
 
-
-                    </form>
-
-
-                  </div>
-                </div>
-                <!-- end card body -->
-              </div>
-              <!-- end card -->
-            </div>
-            <!--end col-->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      
+   
+      <div class="login-input-group">
+        <label for="username" class="login-label">Usuario <span class="text-danger">*</span></label>
+        <div class="login-input-icon">
+          <i class="ri-user-line"></i>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="username"
+            id="username"
+            [ngClass]="{'is-invalid': submitted && f['username'].errors}"
+            placeholder="Ingrese su usuario"
+            required
+          />
+          @if (submitted && f['username'].errors) {
+          <div class="invalid-feedback">
+            @if (f['username'].errors['required']) {
+            <div>El usuario es requerido</div>
+            }
           </div>
-          <!--end row-->
+          }
         </div>
       </div>
-      <!--end col-->
-    </div>
-    <!--end row-->
+
+
+      <div class="login-input-group">
+        <label class="login-label" for="password-input">
+          Contraseña <span class="text-danger">*</span>
+        </label>
+        <div class="login-input-icon">
+          <i class="ri-lock-2-line"></i>
+          <input
+            [type]="fieldTextType ? 'text' : 'password'"
+            formControlName="password"
+            [ngClass]="{'is-invalid': submitted && f['password'].errors}"
+            class="form-control password-input"
+            placeholder="Ingrese su contraseña"
+            id="password-input"
+            required
+          />
+          <button
+            type="button"
+            class="login-eye"
+            (click)="toggleFieldTextType()"
+          >
+            <i class="ri-eye-line" *ngIf="!fieldTextType"></i>
+            <i class="ri-eye-off-line" *ngIf="fieldTextType"></i>
+          </button>
+          @if (submitted && f['password'].errors) {
+          <div class="invalid-feedback">
+            @if (f['password'].errors['required']) {
+            <div>La contraseña es requerida</div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+
+      <div class="form-check mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          value=""
+          id="auth-remember-check"
+        />
+        <label class="form-check-label text-white" for="auth-remember-check" style="opacity: 0.9;">
+          Recuérdame
+        </label>
+      </div>
+
+
+      <button class="btn btn-login" type="submit">
+        <span class="btn-text">Iniciar Sesión</span>
+        <i class="ri-login-box-line"></i>
+      </button>
+
+ 
+      <div class="login-forgot">
+        <a routerLink="/auth/pass-reset">¿Olvidaste tu contraseña?</a>
+      </div>
+    </form>
   </div>
-  <!--end container-->
 </section>
