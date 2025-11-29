@@ -19,6 +19,7 @@ export class Salidas {
     sali_FechaModificacion?: Date;
 
     // Propiedades de Lectura (API Response)
+    secuencia?: number; // Para ordenamiento en tabla
     sucursalDestino?: string;
     unidadesTotales?: number;
     usuarioEnvia?: string;

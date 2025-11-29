@@ -1,1 +1,161 @@
-<p>create works!</p>
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title mb-4">Nueva Salida de Inventario</h5>
+
+    <!-- Overlay de carga inicial -->
+    <div *ngIf="cargando" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando catálogos...</span>
+      </div>
+      <p class="text-muted mt-2">Cargando información...</p>
+    </div>
+
+    <div *ngIf="!cargando">
+      <!-- Sección de Encabezado -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Sucursal Destino <span class="text-danger">*</span></label>
+          <select class="form-select" [(ngModel)]="sucs_Id" [disabled]="guardando">
+            <option [ngValue]="null">Seleccione una sucursal...</option>
+            <option *ngFor="let suc of sucursales" [ngValue]="suc.sucs_Id">
+              {{suc.sucs_Descripcion}}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Vehículo</label>
+          <select class="form-select" [(ngModel)]="vehi_Id" [disabled]="guardando">
+            <option [ngValue]="null">Sin vehículo asignado</option>
+            <option *ngFor="let veh of vehiculos" [ngValue]="veh.vehi_Id">
+              {{veh.vehi_Modelo}} - {{veh.vehi_Placa}}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Transportista</label>
+          <select class="form-select" [(ngModel)]="sali_Transportista" [disabled]="guardando">
+            <option [ngValue]="null">Sin transportista asignado</option>
+            <option *ngFor="let emp of empleados" [ngValue]="emp.empl_Id">
+              {{emp.nombreCompleto}}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Sección de Agregar Productos -->
+      <h6 class="mb-3">Agregar Productos</h6>
+      <div class="row g-3 align-items-end mb-4 p-3 bg-light rounded">
+        <div class="col-md-7">
+          <label class="form-label fw-bold">Artículo <span class="text-danger">*</span></label>
+          <select class="form-select" [(ngModel)]="articuloSeleccionado" [disabled]="guardando">
+            <option [ngValue]="null">Seleccione un artículo...</option>
+            <option *ngFor="let art of articulos" [ngValue]="art.arti_Id">
+              {{art.arti_Codigo}} - {{art.arti_Descripcion}} (Stock: {{art.stockTotal}})
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Cantidad <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" [(ngModel)]="cantidadSeleccionada" 
+                 min="1" [disabled]="guardando">
+        </div>
+
+        <div class="col-md-2">
+          <button type="button" class="btn btn-primary w-100" 
+                  (click)="agregarDetalle()" 
+                  [disabled]="guardando || !articuloSeleccionado || cantidadSeleccionada <= 0">
+            <i class="ri-add-line me-1"></i> Agregar
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid de Productos Agregados -->
+      <div class="table-responsive mb-4">
+        <table class="table table-bordered table-striped align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Artículo</th>
+              <th scope="col" class="text-center">Cantidad</th>
+              <th scope="col" class="text-end">Costo Unit. Prom.</th>
+              <th scope="col" class="text-end">Subtotal</th>
+              <th scope="col" class="text-center">Lotes Usados</th>
+              <th scope="col" class="text-center" style="width: 100px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of detalles; let i = index">
+              <td>{{item.arti_Codigo}}</td>
+              <td>{{item.arti_Descripcion}}</td>
+              <td class="text-center fw-bold">{{item.cantidad}}</td>
+              <td class="text-end">L {{item.costoUnitarioPromedio | number:'1.2-2'}}</td>
+              <td class="text-end fw-bold text-primary">L {{item.costoTotal | number:'1.2-2'}}</td>
+              <td class="text-center">
+                <button type="button" 
+                        class="btn btn-sm btn-light" 
+                        [attr.data-bs-toggle]="'tooltip'" 
+                        [attr.title]="getLotesTooltip(item)"
+                        [disabled]="guardando">
+                  <i class="ri-file-list-line"></i> {{item.lotesUsados.length}}
+                </button>
+              </td>
+              <td class="text-center">
+                <button type="button" class="btn btn-sm btn-soft-danger" 
+                        (click)="eliminarDetalle(i)" 
+                        [disabled]="guardando">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="detalles.length === 0">
+              <td colspan="7" class="text-center text-muted py-4">
+                No hay productos agregados a la salida
+              </td>
+            </tr>
+          </tbody>
+          <tfoot class="table-light" *ngIf="detalles.length > 0">
+            <tr>
+              <td colspan="2" class="text-end fw-bold">Totales:</td>
+              <td class="text-center fw-bold text-info">{{unidadesTotales}}</td>
+              <td colspan="1"></td>
+              <td class="text-end fw-bold text-primary fs-5">L {{costoTotalSalida | number:'1.2-2'}}</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Resumen -->
+      <div class="alert alert-info mb-4" *ngIf="detalles.length > 0">
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Total de Productos:</strong> {{detalles.length}}
+          </div>
+          <div class="col-md-4">
+            <strong>Total de Unidades:</strong> {{unidadesTotales}}
+          </div>
+          <div class="col-md-4">
+            <strong>Costo Total:</strong> <span class="text-primary fs-5">L {{costoTotalSalida | number:'1.2-2'}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light" (click)="cancelar()" [disabled]="guardando">
+          <i class="ri-close-line align-bottom me-1"></i> Cancelar
+        </button>
+        <button type="button" class="btn btn-success" (click)="guardar()" [disabled]="guardando">
+          <span *ngIf="guardando" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!guardando" class="ri-save-line align-bottom me-1"></i>
+          {{guardando ? 'Guardando...' : 'Guardar Salida'}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
