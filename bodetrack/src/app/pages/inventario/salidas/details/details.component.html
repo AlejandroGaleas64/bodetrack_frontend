@@ -1,0 +1,126 @@
+<!-- Overlay de carga -->
+<div *ngIf="cargando" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando detalles...</span>
+  </div>
+</div>
+
+<div class="card" *ngIf="salidaDetalle && !cargando">
+  <div class="card-body">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="card-title mb-0">Detalles de Salida #{{salidaDetalle.sali_Id}}</h5>
+      <span class="badge" 
+        [ngClass]="{
+          'bg-warning-subtle text-warning': salidaDetalle.sali_EstadoSalida === 'Enviada a Sucursal',
+          'bg-success-subtle text-success': salidaDetalle.sali_EstadoSalida === 'Recibida en Sucursal'
+        }">
+        {{salidaDetalle.sali_EstadoSalida}}
+      </span>
+    </div>
+
+    <!-- Información General -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label fw-bold text-muted">Fecha de Salida</label>
+        <p class="mb-0">{{salidaDetalle.sali_FechaSalida | date:'dd/MM/yyyy HH:mm'}}</p>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-bold text-muted">Sucursal Destino</label>
+        <p class="mb-0">{{salidaDetalle.sucursalDestino || 'N/A'}}</p>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-bold text-muted">Costo Total</label>
+        <p class="mb-0 text-primary fw-bold fs-5">L {{salidaDetalle.sali_CostoTotal | number:'1.2-2'}}</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label fw-bold text-muted">Vehículo</label>
+        <p class="mb-0">{{salidaDetalle.vehiculo || 'No asignado'}}</p>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-bold text-muted">Transportista</label>
+        <p class="mb-0">{{salidaDetalle.transportista || 'No asignado'}}</p>
+      </div>
+      <div class="col-md-4" *ngIf="salidaDetalle.sali_GuiaRemision">
+        <label class="form-label fw-bold text-muted">Guía de Remisión</label>
+        <p class="mb-0">{{salidaDetalle.sali_GuiaRemision}}</p>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label fw-bold text-muted">Enviado Por</label>
+        <p class="mb-0">{{salidaDetalle.usuarioEnvia || 'N/A'}}</p>
+      </div>
+      <div class="col-md-4" *ngIf="salidaDetalle.sali_FechaRecepcion">
+        <label class="form-label fw-bold text-muted">Fecha Recepción</label>
+        <p class="mb-0">{{salidaDetalle.sali_FechaRecepcion | date:'dd/MM/yyyy HH:mm'}}</p>
+      </div>
+      <div class="col-md-4" *ngIf="salidaDetalle.usuarioRecibe">
+        <label class="form-label fw-bold text-muted">Recibido Por</label>
+        <p class="mb-0">{{salidaDetalle.usuarioRecibe}}</p>
+      </div>
+    </div>
+
+    <hr class="my-4">
+
+    <!-- Detalle de Productos -->
+    <h6 class="mb-3">Productos Enviados</h6>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Código</th>
+            <th scope="col">Artículo</th>
+            <th scope="col">Lote</th>
+            <th scope="col" class="text-center">Cantidad</th>
+            <th scope="col" class="text-end">Costo Unit.</th>
+            <th scope="col" class="text-center">Vencimiento</th>
+            <th scope="col" class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of detallesProductos">
+            <td>{{item.Arti_Codigo}}</td>
+            <td>{{item.Articulo}}</td>
+            <td>
+              <span class="badge bg-info-subtle text-info">{{item.Lote_Codigo}}</span>
+            </td>
+            <td class="text-center">{{item.Sade_Cantidad}}</td>
+            <td class="text-end">L {{item.Sade_CostoUnitario | number:'1.2-2'}}</td>
+            <td class="text-center">{{item.Sade_FechaVencimiento | date:'dd/MM/yyyy'}}</td>
+            <td class="text-end fw-bold">L {{item.Subtotal | number:'1.2-2'}}</td>
+          </tr>
+          <tr *ngIf="detallesProductos.length === 0">
+            <td colspan="7" class="text-center text-muted">No hay detalles de productos disponibles</td>
+          </tr>
+        </tbody>
+        <tfoot class="table-light">
+          <tr>
+            <td colspan="6" class="text-end fw-bold">Total General:</td>
+            <td class="text-end fw-bold text-primary fs-5">L {{salidaDetalle.sali_CostoTotal | number:'1.2-2'}}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="d-flex justify-content-end gap-2 mt-4">
+      <button type="button" class="btn btn-secondary" (click)="cerrar()" [disabled]="cargando">
+        <i class="ri-close-line align-bottom me-1"></i> Cerrar
+      </button>
+      <button type="button" 
+              class="btn btn-success" 
+              (click)="recibirSalida()" 
+              *ngIf="salidaDetalle?.sali_EstadoSalida === 'Enviada a Sucursal'"
+              [disabled]="cargando">
+        <span *ngIf="cargando" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!cargando" class="ri-checkbox-circle-line align-bottom me-1"></i>
+        {{cargando ? 'Procesando...' : 'Recibir Salida'}}
+      </button>
+    </div>
+  </div>
+</div>
